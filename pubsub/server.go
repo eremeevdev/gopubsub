@@ -30,6 +30,9 @@ func (server *Server) Start() {
 
 	defer listen.Close()
 
+	pubsub := NewPubSub()
+	go pubsub.Start()
+
 	for {
 
 		conn, err := listen.Accept()
@@ -38,6 +41,6 @@ func (server *Server) Start() {
 			log.Fatal(err)
 		}
 
-		go Handler(conn)
+		go Handler(conn, pubsub)
 	}
 }
