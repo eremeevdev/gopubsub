@@ -3,7 +3,6 @@ package pubsub
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"net"
 	"strings"
 )
@@ -16,7 +15,8 @@ func Handler(conn net.Conn, pubsub *PubSub) {
 	data, err := reader.ReadString('\n')
 
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		return
 	}
 
 	command := strings.Split(strings.TrimSuffix(data, "\n"), " ")

@@ -1,5 +1,10 @@
 package pubsub
 
+import (
+	"fmt"
+	"time"
+)
+
 // SubscribeEvent - event for new subscribers
 type SubscribeEvent struct {
 	Topic   string
@@ -57,6 +62,12 @@ func (pubsub *PubSub) BroadcastClients(topic, msg string) {
 
 // Start - run pubsub loop
 func (pubsub *PubSub) Start() {
+
+	count := 0
+
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
 	for {
 		select {
 		case subscriber := <-pubsub.Subscribe:
@@ -65,6 +76,10 @@ func (pubsub *PubSub) Start() {
 			pubsub.UnsubscribeClient(unsubscribe)
 		case broadcast := <-pubsub.Broadcast:
 			go pubsub.BroadcastClients(broadcast.Topic, broadcast.Msg)
+			count = count + 1
+		case <-ticker.C:
+			fmt.Println("published: ", count)
+			count = 0
 		}
 	}
 }
