@@ -64,6 +64,7 @@ func (pubsub *PubSub) BroadcastClients(topic, msg string) {
 func (pubsub *PubSub) Start() {
 
 	count := 0
+	connected := 0
 
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
@@ -72,13 +73,16 @@ func (pubsub *PubSub) Start() {
 		select {
 		case subscriber := <-pubsub.Subscribe:
 			pubsub.SubscribeClient(subscriber)
+			connected++
 		case unsubscribe := <-pubsub.Unsubscribe:
 			pubsub.UnsubscribeClient(unsubscribe)
+			connected--
 		case broadcast := <-pubsub.Broadcast:
 			go pubsub.BroadcastClients(broadcast.Topic, broadcast.Msg)
 			count = count + 1
 		case <-ticker.C:
 			fmt.Println("published: ", count)
+			fmt.Println("connected: ", connected)
 			count = 0
 		}
 	}

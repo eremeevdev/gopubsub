@@ -55,6 +55,10 @@ func Subscribe(conn net.Conn, command []string, pubsub *PubSub) {
 	pubsub.Subscribe <- SubscribeEvent{command[1], ch}
 
 	for msg := range ch {
-		fmt.Fprintf(conn, "%s\n", msg)
+		//fmt.Fprintf(conn, "%s\n", msg)
+		_, err := conn.Write([]byte(msg + "\n"))
+		if err != nil {
+			return
+		}
 	}
 }
